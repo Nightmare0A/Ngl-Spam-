@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NGL Spam</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; padding: 20px; }
+    h1 { color: #6ee7b7; }
+    input, textarea, button {
+      width: 100%; padding: 10px; margin-top: 8px; border-radius: 6px; border: none; font-size: 14px;
+    }
+    input, textarea { background: #1e293b; color: white; }
+    button { background: #6ee7b7; color: black; font-weight: bold; cursor: pointer; }
+    button:disabled { background: gray; cursor: not-allowed; }
+    .log { margin-top: 20px; padding: 10px; background: #1e293b; border-radius: 6px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>🚀 NGL Spam</h1>
+  <label>Username NGL (tanpa @)</label>
+  <input type="text" id="username" placeholder="contoh: beryl" />
+  
+  <label>Pesan</label>
+  <textarea id="message" placeholder="Isi pesan..."></textarea>
+  
+  <label>Jumlah kirim</label>
+  <input type="number" id="count" value="1" min="1" />
+  
+  <button id="sendBtn">Kirim</button>
+  
+  <div class="log" id="log">Log akan muncul di sini...</div>
+  
+  <script>
+    const btn = document.getElementById('sendBtn');
+    const log = document.getElementById('log');
+
+    btn.addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const count = parseInt(document.getElementById('count').value);
+
+      if (!username || !message || !count) {
+        alert("Isi semua data!");
+        return;
+      }
+
+      btn.disabled = true;
+      log.innerHTML = "Mengirim...";
+
+      for (let i = 0; i < count; i++) {
+        try {
+          const res = await fetch('/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, message })
+          });
+          const data = await res.json();
+          log.innerHTML += `<br>${i+1}. ${data.status}`;
+        } catch (err) {
+          log.innerHTML += `<br>${i+1}. Gagal koneksi`;
+        }
+      }
+
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>
